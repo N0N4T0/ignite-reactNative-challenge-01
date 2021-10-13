@@ -5,6 +5,11 @@ import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
 import { TodoInput } from '../components/TodoInput';
 
+export type EditTasksArgs = {
+  taskId: number;
+  taskNewTitle: string;
+}
+
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -29,12 +34,12 @@ export function Home() {
     //TODO - toggle task done if exists
     const updatedTasks = tasks.map(task => ({...task}))
 
-    const foundItem = updatedTasks.find(item => item.id === id)
+    const taskToBeMarkedAsDone = updatedTasks.find(item => item.id === id)
 
-    if(!foundItem)
+    if(!taskToBeMarkedAsDone)
       return
     
-    foundItem.done = !foundItem.done
+    taskToBeMarkedAsDone.done = !taskToBeMarkedAsDone.done
     setTasks(updatedTasks)
   }
 
@@ -57,6 +62,19 @@ export function Home() {
     ])
   }
 
+  function handleEditTask({taskId, taskNewTitle}: EditTasksArgs){
+    const updatedTasks = tasks.map(task => ({...task}))
+
+    const taskToBeUpdated = updatedTasks.find(item => item.id === taskId)
+
+    if(!taskToBeUpdated)
+      return
+
+    taskToBeUpdated.title = taskNewTitle
+
+    setTasks(updatedTasks)
+  }
+
   return (
     <View style={styles.container}>
       <Header tasksCounter={tasks.length} />
@@ -66,7 +84,8 @@ export function Home() {
       <TasksList 
         tasks={tasks} 
         toggleTaskDone={handleToggleTaskDone}
-        removeTask={handleRemoveTask} 
+        removeTask={handleRemoveTask}
+        editTask={handleEditTask} 
       />
     </View>
   )
